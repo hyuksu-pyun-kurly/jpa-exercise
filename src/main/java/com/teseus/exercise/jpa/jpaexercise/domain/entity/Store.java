@@ -1,6 +1,7 @@
 package com.teseus.exercise.jpa.jpaexercise.domain.entity;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import static javax.persistence.CascadeType.ALL;
 
 @Getter
 @Entity
+@NoArgsConstructor
 public class Store {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,8 +25,6 @@ public class Store {
 
     @OneToMany(mappedBy = "store", cascade = ALL)
     private List<Employee> employees = new ArrayList<>();
-
-    public Store() {}
 
     public Store(String name, String address) {
         this.name = name;

@@ -3,6 +3,7 @@ package com.teseus.exercise.jpa.jpaexercise.domain.repository
 import com.teseus.exercise.jpa.jpaexercise.domain.entity.Employee
 import com.teseus.exercise.jpa.jpaexercise.domain.entity.Product
 import com.teseus.exercise.jpa.jpaexercise.domain.entity.Store
+import com.teseus.exercise.jpa.jpaexercise.domain.service.StoreService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.transaction.annotation.Transactional
@@ -14,6 +15,9 @@ import java.time.LocalDate
 class StoreRepositoryTest extends Specification {
     @Autowired
     StoreRepository storeRepository
+
+    @Autowired
+    StoreService storeService
 
     @Transactional
     def 'should save stores'() {
@@ -33,9 +37,9 @@ class StoreRepositoryTest extends Specification {
         storeRepository.save(store2);
 
         when:
-        def stores = storeRepository.findAll()
+        long size = storeService.find();
 
         then:
-        stores.size() > 0
+        size == 60000L
     }
 }
