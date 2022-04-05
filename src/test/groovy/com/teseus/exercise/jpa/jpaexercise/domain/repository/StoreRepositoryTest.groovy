@@ -6,12 +6,13 @@ import com.teseus.exercise.jpa.jpaexercise.domain.entity.Store
 import com.teseus.exercise.jpa.jpaexercise.domain.service.StoreService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.transaction.annotation.Transactional
+import org.springframework.test.context.TestPropertySource
 import spock.lang.Specification
 
 import java.time.LocalDate
 
 @SpringBootTest
+@TestPropertySource(properties = "spring.jpa.properties.hibernate.default_batch_fetch_size=1000")
 class StoreRepositoryTest extends Specification {
     @Autowired
     StoreRepository storeRepository
@@ -19,8 +20,7 @@ class StoreRepositoryTest extends Specification {
     @Autowired
     StoreService storeService
 
-    @Transactional
-    def 'should save stores'() {
+    def 'should return summary without exception'() {
         given:
         Store store1 = new Store("서점", "서울시 강남구");
         store1.addProduct(new Product("책1_1", 10000L));
@@ -41,5 +41,28 @@ class StoreRepositoryTest extends Specification {
 
         then:
         size == 60000L
+    }
+
+    def 'should cause exception when read'() {
+        given:
+        Store store1 = new Store("서점", "서울시 강남구");
+        store1.addProduct(new Product("책1_1", 10000L));
+        store1.addProduct(new Product("책1_2", 20000L));
+        store1.addEmployee(new Employee("직원1", LocalDate.now()));
+        store1.addEmployee(new Employee("직원2", LocalDate.now()));
+        storeRepository.save(store1);
+
+        Store store2 = new Store("서점2", "서울시 강남구");
+        store2.addProduct(new Product("책2_1", 10000L));
+        store2.addProduct(new Product("책2_2", 20000L));
+        store2.addEmployee(new Employee("직원2_1", LocalDate.now()));
+        store2.addEmployee(new Employee("직원2_2", LocalDate.now()));
+        storeRepository.save(store2);
+
+        when:
+        long size = storeService.fetch()
+
+        then:
+        noExceptionThrown()
     }
 }

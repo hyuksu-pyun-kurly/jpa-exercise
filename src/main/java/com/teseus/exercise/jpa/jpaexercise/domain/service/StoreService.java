@@ -37,4 +37,22 @@ public class StoreService {
 
         return productSum;
     }
+
+    @Transactional(readOnly = true)
+    public long fetch() {
+        List<Store> stores = storeRepository.findAllByFetchJoin();
+        long productSum = stores.stream()
+                .map(Store::getProducts)
+                .flatMap(Collection::stream)
+                .mapToLong(Product::getPrice)
+                .sum();
+
+        stores.stream()
+                .map(Store::getEmployees)
+                .flatMap(Collection::stream)
+                .map(Employee::getName)
+                .collect(Collectors.toList());
+
+        return productSum;
+    }
 }
